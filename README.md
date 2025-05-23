@@ -1,16 +1,27 @@
-# Wildfire Risk Analysis System (Refactored)
+# NASA FIRMS Wildfire Analysis System
 
-A comprehensive spatial analysis system for monitoring, analyzing, and predicting wildfire risk through the integration of satellite fire detection data and meteorological information.
+A comprehensive spatial analysis system for monitoring, analyzing, and predicting wildfire risk through the integration of NASA FIRMS (Fire Information for Resource Management System) satellite fire detection data and meteorological information.
 
 ## Overview
 
-This project has been refactored from a single monolithic script (`cleaner.py`) into a modular, maintainable Python package structure. The system creates a spatial graph representation of wildfire risk by integrating data from multiple sources:
+This project provides a modular, maintainable Python package for processing and analyzing NASA FIRMS wildfire data. The system creates a spatial graph representation of wildfire risk by integrating data from multiple sources:
 
-1. NASA FIRMS (Fire Information for Resource Management System) satellite fire detections
-2. Current meteorological conditions
+1. **NASA FIRMS** satellite fire detections (latitude, longitude, acquisition date/time, confidence, FRP, brightness)
+2. Current meteorological conditions (temperature, humidity, wind speed/direction, etc.)
 3. Forecast meteorological conditions (6-hour ahead predictions)
 
 The system covers western North America (approximately (-130°W, 30°N) to (-100°W, 70°N)), including most of Canada and the western United States.
+
+## NASA FIRMS Data Integration
+
+The system processes NASA FIRMS data which includes:
+
+- **Fire locations**: Precise latitude/longitude coordinates of detected fire hotspots
+- **Fire intensity**: Fire Radiative Power (FRP) and brightness temperature measurements
+- **Temporal information**: Acquisition date and time of satellite observations
+- **Confidence values**: Detection confidence scores for each fire point
+
+This data is combined with meteorological information to create a comprehensive spatial representation of wildfire risk.
 
 ## Directory Structure
 
@@ -19,7 +30,7 @@ wildfire_analysis/               # Main package directory
 ├── __init__.py                  # Package initialization
 ├── data_processing/             # Data processing modules
 │   ├── __init__.py
-│   ├── loader.py                # Data loading functions
+│   ├── loader.py                # FIRMS and weather data loading functions
 │   └── preprocessor.py          # Data preprocessing functions
 ├── spatial/                     # Spatial analysis modules
 │   ├── __init__.py
@@ -49,20 +60,17 @@ checks/                         # Data validation and quality checks
 run_analysis.py                 # Command-line script to run the analysis
 validate_all.py                 # Script to run all validation checks
 setup.py                        # Package installation script
-README.md                       # Original project README
-README_refactored.md            # This file
 ```
 
-## Key Improvements from Refactoring
+## Key Features
 
-1. **Modular Design**: Organized into logical components with clear responsibilities
-2. **Improved Maintainability**: Smaller, focused modules instead of one large script
-3. **Better Documentation**: Comprehensive docstrings and module-level documentation
-4. **Reusable Components**: Core functionality organized into importable modules
-5. **Enhanced Testability**: Modular structure makes unit testing easier
-6. **Flexible Configuration**: Command-line options and programmatic API
-7. **Installable Package**: Can be installed with pip for use in other projects
-8. **Data Validation**: Comprehensive checks to ensure data quality and consistency
+1. **NASA FIRMS Data Processing**: Efficient processing of satellite fire detection data
+2. **Modular Design**: Organized into logical components with clear responsibilities
+3. **Spatial Grid System**: Creates equal-area grid cells (10km × 10km) despite Earth's curvature
+4. **Graph-Based Representation**: Nodes represent grid cells, edges connect neighboring cells
+5. **Feature Extraction**: Computes fire density, intensity, and meteorological features per cell
+6. **Data Validation**: Comprehensive checks to ensure FIRMS data quality and consistency
+7. **Parallel Processing**: Utilizes multiple CPU cores for efficient data processing
 
 ## Installation
 
@@ -105,68 +113,38 @@ print(f"Created graph with {G.number_of_nodes()} nodes and {G.number_of_edges()}
 print(f"Each node has {len(list(node_features.values())[0])} features")
 ```
 
-### Data Validation
+## NASA FIRMS Data Validation
 
-Before running the analysis, you can validate all input data to ensure quality and consistency:
+Before running the analysis, you can validate the FIRMS data to ensure quality and consistency:
 
 ```bash
 # Run all validation checks
 python validate_all.py --data-dir data --output-dir output
 
-# Run specific validation checks
+# Run specific FIRMS data validation
 python checks/verify_firms_data.py data/firms_fire_data.csv
-python checks/verify_meteo_data.py data/current_weather.csv current
-python checks/validate_grid_coverage.py data/grid_cells.csv 10 true
-python checks/validate_weather_variables.py data/current_weather.csv current
 ```
 
-## Core Features
-
-- **Multi-source Data Integration**: Combines satellite fire detections with weather variables
-- **Adaptive Spatial Grid**: Creates equally-sized cells (10km × 10km) despite Earth's curvature
-- **Optimized Distance Calculations**: Uses vectorized haversine distance calculations for efficiency
-- **Comprehensive Feature Extraction**: Generates rich feature vectors for each geographic cell
-- **Graph-based Representation**: Enables spatial analysis and network-based modeling approaches
-- **Parallel Processing**: Utilizes multiple CPU cores for faster data processing
-- **Data Quality Validation**: Ensures input data meets quality standards before analysis
-
-## Validation Checks
-
-The system includes several data validation checks to ensure data quality:
+The system includes several data validation checks specific to FIRMS data:
 
 1. **FIRMS Data Integrity**:
 
-   - Validates required columns and data types
+   - Validates required columns (latitude, longitude, acq_date, acq_time, confidence, frp, brightness)
    - Checks for missing values in critical fields
    - Verifies temporal and spatial coverage
-   - Detects duplicate records
+   - Detects duplicate fire records
 
-2. **Meteorological Data Validation**:
-
-   - Confirms completeness of required variables
-   - Validates data formats and structure
-   - Checks for missing time periods
-   - Verifies spatial coverage matches study area
-
-3. **Grid Coverage Validation**:
-
-   - Ensures complete coverage of the study region
-   - Checks for gaps or overlaps between grid cells
-   - Validates consistent cell spacing
-   - Creates visualization of grid coverage
-
-4. **Weather Variable Checks**:
-   - Verifies values are within expected ranges
-   - Detects statistical outliers
-   - Identifies suspicious temporal patterns
-   - Generates diagnostic plots for visual inspection
+2. **Spatial Coverage Validation**:
+   - Ensures FIRMS data covers the study region
+   - Validates consistent spatial distribution
+   - Creates visualization of fire detection coverage
 
 ## Performance
 
-The refactored code maintains the high performance of the original implementation:
+The system efficiently processes NASA FIRMS datasets:
 
-- Efficiently processes datasets with thousands of records
-- Creates spatial graphs with thousands of nodes and edges in seconds
+- Processes thousands of fire detection records in seconds
+- Creates spatial graphs with thousands of nodes and edges
 - Leverages parallel processing to utilize multiple CPU cores
 - Uses optimized distance calculations for geographic data
 
