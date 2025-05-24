@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -21,7 +21,7 @@ setup(
         "scipy>=1.7.0",
         "pyarrow>=8.0.0",
         "matplotlib>=3.5.0",
-        "numba>=0.56.0"
+        "numba>=0.56.0",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -36,4 +36,4 @@ setup(
             "wildfire-analysis=wildfire_analysis.main:main",
         ],
     },
-) 
+)
